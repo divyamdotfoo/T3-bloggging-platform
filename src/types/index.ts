@@ -3,7 +3,7 @@ import type {
   inferRouterInputs,
   inferRouterError,
 } from "@trpc/server";
-import { type AppRouter } from "@/server/api/root";
+import { type AppRouter } from "@/server/root";
 
 export type PostProps = Required<
   inferRouterOutputs<AppRouter>["post"]["getPostById"]
