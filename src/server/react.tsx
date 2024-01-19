@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { AppRouter } from "./root";
 import { createTRPCReact, httpBatchLink } from "@trpc/react-query";
 import React, { useState } from "react";
+import { getUrl, transformer } from "./utils";
 export const api = createTRPCReact<AppRouter>();
 
 export function TRPCProvider(props: { children: React.ReactNode }) {
@@ -11,9 +12,10 @@ export function TRPCProvider(props: { children: React.ReactNode }) {
     api.createClient({
       links: [
         httpBatchLink({
-          url: "http://localhost:3000/api/trpc",
+          url: getUrl(),
         }),
       ],
+      transformer: transformer,
     })
   );
   return (
