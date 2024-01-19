@@ -6,7 +6,9 @@ export default function Page() {
   const { data } = api.hello.hi.useQuery({ name: "divyam" });
   return (
     <div>
-      <p>{data}</p>
+      {data?.map((d) => (
+        <p key={d.name}>{d.name}</p>
+      ))}
     </div>
   );
 }

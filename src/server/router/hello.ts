@@ -1,10 +1,9 @@
 import { procedure, router } from "../trpc";
 import { z } from "zod";
+import { db } from "../db";
 export const helloRouter = router({
-  hi: procedure
-    .input(z.object({ name: z.string() }))
-    .query(async ({ input }) => {
-      await new Promise((r) => setTimeout(r, 100));
-      return `Hello ${input.name}, lets pull this off.`;
-    }),
+  hi: procedure.input(z.object({})).query(async ({ input }) => {
+    const users = await db.user.findMany({ take: 2, where: {} });
+    return users;
+  }),
 });
