@@ -3,7 +3,7 @@
 import { api } from "@/server/react";
 
 export default function Page() {
-  const { data } = api.hello.hi.useQuery({ name: "divyam" });
+  const { data } = api.hello.hi.useQuery({});
   return (
     <div>
       {data?.map((d) => (
