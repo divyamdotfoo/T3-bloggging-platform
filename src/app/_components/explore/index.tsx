@@ -3,7 +3,7 @@ import type { Tag, User } from "@prisma/client";
 import { Check, FolderOpen, PlusIcon, TagIcon } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { capitalize } from "@/lib/utils";
 import millify from "millify";

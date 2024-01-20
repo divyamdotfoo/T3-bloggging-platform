@@ -26,7 +26,14 @@ export function Footer() {
           <GlobeIcon className=" h-6 w-6" />
         )}
       </Link>
-      <SearchBtn asFooter={true} />
+
+      <Link href={"/search"}>
+        {currentPath == "/search" ? (
+          <MagnifyingGlassIcon className=" h-6 w-6" color="#7c3aed" />
+        ) : (
+          <MagnifyingGlassIcon className=" h-6 w-6" />
+        )}
+      </Link>
       <Link href={"/bookmarks"}>
         {currentPath == "/bookmarks" ? (
           <BookmarkFilledIcon className=" h-6 w-6" color="#7c3aed" />

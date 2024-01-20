@@ -10,13 +10,12 @@ import {
 } from "./btns";
 import { Aside } from "./aside";
 import { getServerAuthSession } from "@/server/auth";
-import { TorusIcon } from "lucide-react";
 import { Logo } from "../others";
 
 export default async function Navbar() {
   const session = await getServerAuthSession();
   return (
-    <div className=" mb-4 border-b border-border">
+    <div className="border-b border-border">
       <div className=" mx-auto flex max-w-7xl items-center justify-between px-4 pb-3 pt-3">
         <div className=" flex items-center gap-2">
           <Aside />

@@ -82,4 +82,64 @@ export const userRouter = createTRPCRouter({
       });
       return deleted;
     }),
+  follow: protectedProcedure
+    .input(z.object({ toFollowId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const [following, followed] = await ctx.db.$transaction([
+        ctx.db.user.update({
+          where: {
+            id: ctx.session.user.id,
+          },
+          data: {
+            following: {
+              connect: {
+                id: input.toFollowId,
+              },
+            },
+          },
+        }),
+        ctx.db.user.update({
+          where: {
+            id: input.toFollowId,
+          },
+          data: {
+            followers: {
+              connect: {
+                id: ctx.session.user.id,
+              },
+            },
+          },
+        }),
+      ]);
+    }),
+  unFollow: protectedProcedure
+    .input(z.object({ toUnFollowId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const [unFollowing, unFollowed] = await ctx.db.$transaction([
+        ctx.db.user.update({
+          where: {
+            id: ctx.session.user.id,
+          },
+          data: {
+            following: {
+              disconnect: {
+                id: input.toUnFollowId,
+              },
+            },
+          },
+        }),
+        ctx.db.user.update({
+          where: {
+            id: input.toUnFollowId,
+          },
+          data: {
+            followers: {
+              disconnect: {
+                id: ctx.session.user.id,
+              },
+            },
+          },
+        }),
+      ]);
+    }),
 });

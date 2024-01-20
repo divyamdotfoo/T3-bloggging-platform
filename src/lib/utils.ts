@@ -1,3 +1,4 @@
+import { Activity } from "@/app/_components/profile";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 export function cn(...inputs: ClassValue[]) {
@@ -25,3 +26,19 @@ export const getShortDate = (val: string | number | Date) => {
     day: "numeric",
   }).format(new Date(val));
 };
+
+export const getMonthYear = (val: string | number | Date) => {
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    year: "numeric",
+  })
+    .format(new Date(val))
+    .split(" ")
+    .join(", ");
+};
+
+export function sortActivities(posts: Activity[], comments: Activity[]) {
+  return [...posts, ...comments].sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+  );
+}
