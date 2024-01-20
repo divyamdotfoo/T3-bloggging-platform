@@ -8,7 +8,7 @@ export default async function Page() {
   });
 
   return (
-    <TagContainer tags={tags}>
+    <TagContainer tags={tags} isFollowed={false}>
       <p className=" text-xl font-bold">Trending Tags</p>
       <p className=" font-semibold text-muted-foreground">
         Tags with most number of followers

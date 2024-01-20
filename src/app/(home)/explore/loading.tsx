@@ -1,6 +1,13 @@
-import { Loading } from "@/app/_components/loaders/top-progress";
-
+import { Skeleton } from "@/components/ui/skeleton";
 export default function LoadingFallback() {
-  // TODO
-  return <p>loading</p>;
+  return (
+    <div className=" grid grid-cols-1 md:grid-cols-2 gap-4 ">
+      <Skeleton className=" h-12" />
+      <Skeleton className=" h-12" />
+      <Skeleton className=" h-12" />
+      <Skeleton className=" h-12" />
+      <Skeleton className=" h-12" />
+      <Skeleton className=" h-12" />
+    </div>
+  );
 }

@@ -10,7 +10,7 @@ export default async function ExplorePage() {
   });
   return (
     <div>
-      <TagContainer tags={tags}>
+      <TagContainer tags={tags} isFollowed={false}>
         <div className=" flex items-center gap-4">
           <p className=" text-xl font-bold">Trending Tags</p>
           <PrimaryColorBtn path="/explore/tags">See all tags</PrimaryColorBtn>

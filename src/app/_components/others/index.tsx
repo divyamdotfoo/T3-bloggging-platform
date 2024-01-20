@@ -3,9 +3,9 @@ import { GitHubLogoIcon, TwitterLogoIcon } from "@radix-ui/react-icons";
 import { TorusIcon } from "lucide-react";
 export function DiscussionHeader() {
   return (
-    <div className="flex w-full flex-col items-center gap-3 rounded-xl border border-border bg-card p-8 shadow-sm">
+    <div className="flex w-full flex-col items-start md:items-center gap-3 rounded-xl border border-border bg-card p-8 shadow-sm">
       <div className="relative flex w-full items-center justify-center ">
-        <p className="text-xl font-bold md:text-3xl md:tracking-wide">
+        <p className=" text-lg font-bold md:text-3xl md:tracking-wide">
           Discover the Digital Universe
         </p>
         <div className=" absolute bottom-0 left-0 right-0 top-0 bg-primary opacity-20 blur-2xl"></div>

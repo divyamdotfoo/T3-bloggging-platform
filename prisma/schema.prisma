@@ -44,6 +44,7 @@ model VerificationToken {
 }
 
 // outside auth
+
 model User {
   id            String    @id @default(cuid())
   name          String
@@ -66,6 +67,18 @@ model User {
   drafts        Draft[]
 }
 
+
+model Draft {
+  id        String   @id @default(cuid())
+  title     String?   @db.Text()
+  content   Json
+  userId    String
+  published Boolean  @default(false)
+  createdAt DateTime @default(now())
+  bannerImg String? @db.Text()
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
 model Post {
   id          String    @id @default(cuid())
   title       String    @db.MediumText()
@@ -82,18 +95,6 @@ model Post {
   tags        Tag[]
   intro       String    @db.MediumText()
 }
-
-model Draft {
-  id        String   @id @default(cuid())
-  title     String?   @db.Text()
-  content   Json
-  userId    String
-  published Boolean  @default(false)
-  createdAt DateTime @default(now())
-  bannerImg String? @db.Text()
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
 model Tag {
   id        String @id @default(cuid())
   post      Post[]

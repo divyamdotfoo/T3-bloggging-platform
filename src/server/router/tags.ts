@@ -29,8 +29,48 @@ export const tagRouter = createTRPCRouter({
     }),
   // TODO
   followTag: protectedProcedure
-    .input(z.object({ id: z.string() }))
+    .input(z.object({ tagId: z.string() }))
     .mutation(({ ctx, input }) => {
-      // return ctx.db.
+      return ctx.db.user.update({
+        where: {
+          id: ctx.session.user.id,
+        },
+        data: {
+          followingTags: {
+            connect: {
+              id: input.tagId,
+            },
+          },
+        },
+      });
     }),
+
+  unfollowTag: protectedProcedure
+    .input(z.object({ tagId: z.string() }))
+    .mutation(({ ctx, input }) => {
+      return ctx.db.user.update({
+        where: {
+          id: ctx.session.user.id,
+        },
+        data: {
+          followingTags: {
+            disconnect: {
+              id: input.tagId,
+            },
+          },
+        },
+      });
+    }),
+
+  tagYouFollow: protectedProcedure.input(z.object({})).query(({ ctx }) => {
+    return ctx.db.tag.findMany({
+      where: {
+        users: {
+          every: {
+            id: ctx.session.user.id,
+          },
+        },
+      },
+    });
+  }),
 });
