@@ -239,7 +239,7 @@ export function RecentActivity(props: {
   return (
     <div className=" w-full p-4 flex flex-col items-start gap-3">
       {activities.map((a) => (
-        <Activity activity={a} />
+        <Activity key={a.id} activity={a} />
       ))}
     </div>
   );
