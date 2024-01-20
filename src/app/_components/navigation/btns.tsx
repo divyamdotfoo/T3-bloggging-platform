@@ -55,7 +55,7 @@ export function SearchBtn({ asFooter }: { asFooter: boolean }) {
           <MagnifyingGlassIcon className=" h-6 w-6" color="#6d28d9" />
         </Button>
       </DialogTrigger>
-      <DialogContent className=" top-[20%]">
+      <DialogContent className="p-0 max-w-3xl">
         <SearchBox />
       </DialogContent>
     </Dialog>

@@ -1,4 +1,5 @@
 import { AllFeeds } from "@/app/_components/feeds/all";
 export default async function HomePage() {
-  return <AllFeeds />;
+  // return <AllFeeds />;
+  return <p>hello</p>;
 }

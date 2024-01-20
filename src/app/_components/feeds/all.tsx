@@ -57,7 +57,14 @@ export function AllFeeds() {
         <div className="flex w-full flex-col gap-3">
           {mergeBetween(
             // @ts-ignore
-            posts?.map((p) => <FeedCard key={p?.id} post={p} />),
+            posts?.map((p) => (
+              <FeedCard
+                key={p?.id}
+                post={p}
+                showBookmarkIcon={true}
+                showIntro={true}
+              />
+            )),
             <RecommendedUsers />,
             4
           )}

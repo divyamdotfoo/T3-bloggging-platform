@@ -21,15 +21,22 @@ import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { getShortDate } from "@/lib/utils";
 
-type PostQueryOutput = Required<
+export type PostQueryOutput = Required<
   inferRouterOutputs<AppRouter>["post"]["getPostById"]
 >;
 interface CardProps {
   post: PostQueryOutput;
   children?: React.ReactNode;
+  showBookmarkIcon: boolean;
+  showIntro: boolean;
 }
 
-export function FeedCard({ post, children }: CardProps) {
+export function FeedCard({
+  post,
+  children,
+  showBookmarkIcon,
+  showIntro,
+}: CardProps) {
   const [bmrk, setBmrk] = useState(false);
   const router = useRouter();
   const date = getShortDate(post.createdAt);
@@ -71,7 +78,9 @@ export function FeedCard({ post, children }: CardProps) {
           >
             {post.title}
           </Link>
-          <p className=" hidden text-sm opacity-75 md:block">{post.intro}</p>
+          {showIntro && (
+            <p className=" hidden text-sm opacity-75 md:block">{post.intro}</p>
+          )}
         </div>
         <div
           className=" w-full overflow-hidden rounded-md shadow-sm shadow-card md:w-[150px]"
@@ -110,13 +119,15 @@ export function FeedCard({ post, children }: CardProps) {
           {post.views > 0 && <p className=" text-sm">{post.views} reads</p>}
         </div>
         <div>
-          <button onClick={bookmarkHandler}>
-            {bmrk ? (
-              <BookmarkFilledIcon className="h-5 w-5" />
-            ) : (
-              <BookmarkIcon className=" h-5 w-5" />
-            )}
-          </button>
+          {showBookmarkIcon && (
+            <button onClick={bookmarkHandler}>
+              {bmrk ? (
+                <BookmarkFilledIcon className="h-5 w-5" />
+              ) : (
+                <BookmarkIcon className=" h-5 w-5" />
+              )}
+            </button>
+          )}
         </div>
       </div>
       <div className=" pt-2">{children}</div>

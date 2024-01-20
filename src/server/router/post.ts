@@ -48,6 +48,22 @@ export const postRouter = createTRPCRouter({
             }
           : undefined,
         take: input.limit ? input.limit : 4,
+        where: input.query
+          ? {
+              OR: [
+                {
+                  title: {
+                    startsWith: input.query,
+                  },
+                },
+                {
+                  intro: {
+                    contains: input.query,
+                  },
+                },
+              ],
+            }
+          : undefined,
         include: {
           user: {
             select: {
