@@ -12,8 +12,7 @@ import { useEditor } from "@/store/editorContext";
 
 export default function Editor({ draft }: { draft: Draft }) {
   const session = useSession();
-  const editorref = useRef<EditorJs | null>(null);
-  const { editorData: data, setEditorData: setData } = useEditor();
+  const { editorData: data, setEditorData: setData, editorRef } = useEditor();
 
   const { debouncedData } = useDebounce<OutputData>(data, 800);
   const updateDraft = api.draft.updateDraftContent.useMutation({
@@ -22,32 +21,32 @@ export default function Editor({ draft }: { draft: Draft }) {
   });
   const setSaving = useSaveStatus((s) => s.setSaving);
   useEffect(() => {
-    if (editorref.current) return;
+    if (editorRef.current) return;
     const editor = new EditorJs({
       holder: "editorjs",
-      data: draft.content as unknown as OutputData,
+      data: data,
       tools: tools,
       placeholder: "Press tab to open menu",
       onChange: async () => {
-        const data = await editorref.current?.saver.save();
+        const data = await editorRef.current?.saver.save();
         if (data) setData(data);
-        console.log(data);
+        console.log("data changed", data);
       },
     });
-    editorref.current = editor;
+    editorRef.current = editor;
   }, []);
 
-  // useEffect(() => {
-  //   const save = () => {
-  //     if (!session.data?.user) {
-  //       localStorage.setItem("data", JSON.stringify(debouncedData));
-  //       return;
-  //     } else {
-  //       updateDraft.mutate({ id: draft.id, content: debouncedData });
-  //     }
-  //   };
-  //   save();
-  // }, [debouncedData]);
+  useEffect(() => {
+    const save = () => {
+      if (!session.data?.user) {
+        localStorage.setItem("data", JSON.stringify(debouncedData));
+        return;
+      } else {
+        updateDraft.mutate({ id: draft.id, content: debouncedData });
+      }
+    };
+    save();
+  }, [debouncedData]);
   return (
     <div className=" mx-auto w-full px-4 py-6 md:w-2/3  md:px-0 ">
       {draft.bannerImg ? (
@@ -56,7 +55,7 @@ export default function Editor({ draft }: { draft: Draft }) {
         <AddCoverBtn />
       )}
       <ImageUploader draftId={draft.id} />
-      <TitleTextArea draftId={draft.id} />
+      <TitleTextArea draftId={draft.id} title={draft.title ?? ""} />
       <div id="editorjs" className=""></div>
     </div>
   );

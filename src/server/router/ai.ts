@@ -1,10 +1,9 @@
 import { createTRPCRouter, publicProcedure } from "../trpc";
 import { ChatOpenAI } from "@langchain/openai";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
-import type { OutputData } from "@editorjs/editorjs";
+import fs from "fs";
+
 import { z } from "zod";
-import { nanoid } from "nanoid";
-import { Message } from "@/store";
 const chatModel = new ChatOpenAI({
   openAIApiKey: process.env.OPENAI_KEY,
 });
@@ -12,9 +11,17 @@ const chatModel = new ChatOpenAI({
 const prompt = ChatPromptTemplate.fromMessages([
   [
     "system",
-    "You have to generate a json data for a blog application as user demands",
+    `You are an amazing blog writing assistant for an online application ,help the user as they prompt you. This is the current editor state of the user each unique value is header and the nested array are the paragraphs between headers. You have to help the user with their needs and respond with the same format of array containing headers and paragraph. template=[header,[paragraph1,paragraph2..],..]. RESPOND ONLY WITH ARRAY NO MATTER WHAT!!.DONT INCLUDE ANY OTHER MESSAGE. NEVER INCLUDE HEADERS IN NESTED ARRAY KEEP THEM AS NORMAL STRING VALUE INSIDE THE DATA ARRAY. NEVER INCLUDE ANY CODE.`,
   ],
-  ["user", "{input}"],
+  [
+    "system",
+    " this is user current editor state {data},RESPOND ONLY WITH ARRAY NO MATTER WHAT!!",
+  ],
+
+  [
+    "user",
+    " this is the user prompt related to current editor state.  {input}",
+  ],
 ]);
 
 const chain = prompt.pipe(chatModel);
@@ -24,20 +31,17 @@ export const aiRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       console.log("input", input.message);
       console.log("data", input.data);
-      // try {
-      //   const aiRes = await chain.invoke({
-      //     input: input.message,
-      //   });
-      //   const obj: Message = {
-      //     content: aiRes.content as unknown as string,
-      //     id: nanoid(6),
-      //     type: "ai",
-      //   };
-      //   console.log("ai response", aiRes.content);
-      //   return obj;
-      // } catch (e) {
-      //   console.log(e);
-      // }
+      try {
+        const aiRes = await chain.invoke({
+          input: input.message,
+          data: input.data,
+        });
+        console.log("ai response");
+        fs.writeFileSync("data.json", JSON.stringify(aiRes.content));
+        return aiRes.content;
+      } catch (e) {
+        console.log(e);
+      }
       return null;
     }),
 });

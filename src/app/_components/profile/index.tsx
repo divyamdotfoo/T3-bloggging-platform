@@ -27,7 +27,7 @@ import { date } from "zod";
 
 export function ProfileContainer(props: { children: React.ReactNode }) {
   return (
-    <div className="rounded-md bg-card md:p-4 p-8  border-gray-900 md:border max-w-5xl mx-auto md:mt-4 ">
+    <div className="rounded-md bg-card md:p-4 px-8 py-4  border-gray-900 md:border max-w-5xl mx-auto md:mt-2 ">
       <div className="w-full md:w-5/6 mx-auto flex flex-col items-start gap-5">
         {props.children}
       </div>

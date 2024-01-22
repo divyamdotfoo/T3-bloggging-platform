@@ -305,11 +305,17 @@ export function ImageUploader({ draftId }: { draftId: string }) {
   }
 }
 
-export function TitleTextArea({ draftId }: { draftId: string }) {
-  const [text, setText] = useState("");
+export function TitleTextArea({
+  draftId,
+  title,
+}: {
+  draftId: string;
+  title: string;
+}) {
+  const [text, setText] = useState(title);
   const router = useRouter();
   const setSaving = useSaveStatus((s) => s.setSaving);
-  const { debouncedData } = useDebounce<string>(text, 500);
+  const { debouncedData } = useDebounce<string>(text, 2000);
   const changetTitle = api.draft.updateDraftTitle.useMutation({
     onMutate: () => setSaving(true),
     onSuccess: () => {

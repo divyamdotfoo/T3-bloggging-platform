@@ -12,9 +12,12 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { api } from "@/server/react";
 import { Message, useAiHelp } from "@/store";
-import { SendHorizonalIcon, Sparkles } from "lucide-react";
+import { Loader, SendHorizonalIcon, Sparkles } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useEditor } from "@/store/editorContext";
+import { arrayToSchema, schemaToArray } from "@/lib/schemaParser";
+import { useRouter } from "next/navigation";
+import { flushSync } from "react-dom";
 
 export function AskAiBtn() {
   return (
@@ -91,12 +94,21 @@ export function ChatMessage({ message }: { message: Message }) {
 
 export function SendChat() {
   const { setMessages } = useAiHelp();
-  const { editorData } = useEditor();
+  const { editorData, setEditorData, editorRef } = useEditor();
+  const router = useRouter();
 
   const sendAi = api.ai.chat.useMutation({
     onSuccess: (data) => {
       if (data) {
-        setMessages(data);
+        const parsedData = JSON.parse(data as string);
+        const outputData = arrayToSchema({
+          arr: parsedData,
+          version: editorData.version,
+        });
+        console.log("ai", outputData);
+        if (editorRef.current) {
+          editorRef.current?.blocks.render(outputData);
+        }
       }
     },
   });
@@ -108,7 +120,7 @@ export function SendChat() {
       id: nanoid(),
       type: "user",
     });
-    sendAi.mutate({ message: query, data: editorData });
+    sendAi.mutate({ message: query, data: schemaToArray(editorData).arr });
     setQuery("");
     if (textAreaRef.current) {
       textAreaRef.current.style.height = "40px";
@@ -143,7 +155,11 @@ export function SendChat() {
         className=" hover:bg-background"
         onClick={handleSendPrompt}
       >
-        <SendHorizonalIcon className=" text-primary w-5 h-5" />
+        {sendAi.isPending ? (
+          <Loader className=" animate-spin w-4 h-4" />
+        ) : (
+          <SendHorizonalIcon className=" text-primary w-5 h-5" />
+        )}
       </Button>
     </div>
   );

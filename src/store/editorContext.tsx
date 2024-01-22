@@ -1,11 +1,19 @@
 // Context for Draft page so that both the editor and the editor nav can access the draft data
-
+"use client";
 import { OutputData } from "@editorjs/editorjs";
-import React, { createContext, useContext, useState } from "react";
+import React, {
+  MutableRefObject,
+  createContext,
+  useContext,
+  useRef,
+  useState,
+} from "react";
+import EditorJs from "@editorjs/editorjs";
 
 interface EditorContext {
   editorData: OutputData;
   setEditorData: React.Dispatch<React.SetStateAction<OutputData>>;
+  editorRef: MutableRefObject<EditorJs | null>;
 }
 
 export const EditorContext = createContext<EditorContext | null>(null);
@@ -18,9 +26,11 @@ export function EditorProvider({
   value: OutputData;
 }) {
   const [editorData, setEditorData] = useState<OutputData>(value);
+  const editorRef = useRef<EditorJs | null>(null);
   const val = {
     editorData,
     setEditorData,
+    editorRef,
   };
 
   return (
