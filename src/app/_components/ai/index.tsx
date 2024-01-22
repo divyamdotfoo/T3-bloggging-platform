@@ -94,8 +94,8 @@ export function ChatMessage({ message }: { message: Message }) {
 
 export function SendChat() {
   const { setMessages } = useAiHelp();
-  const { editorData, setEditorData, editorRef } = useEditor();
-  const router = useRouter();
+  const { editorData, editorRef } = useEditor();
+  const [query, setQuery] = useState("");
 
   const sendAi = api.ai.chat.useMutation({
     onSuccess: (data) => {
@@ -120,13 +120,20 @@ export function SendChat() {
       id: nanoid(),
       type: "user",
     });
-    sendAi.mutate({ message: query, data: schemaToArray(editorData).arr });
+    sendAi.mutate(
+      { message: query, data: schemaToArray(editorData).arr },
+      {
+        onError: (e) => {
+          setQuery("");
+          console.log(e);
+        },
+      }
+    );
     setQuery("");
     if (textAreaRef.current) {
       textAreaRef.current.style.height = "40px";
     }
   };
-  const [query, setQuery] = useState("");
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleTextAreaheight = (
