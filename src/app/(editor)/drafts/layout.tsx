@@ -23,7 +23,6 @@ export default function EditorLayout({
         <Drafts />
       </Sidebar>
       <div className=" w-full p-4">
-        <EditorNav />
         <Suspense fallback={<EditorLoader />}>{children}</Suspense>
       </div>
     </Container>

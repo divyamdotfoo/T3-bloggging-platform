@@ -1,3 +1,4 @@
+import { aiRouter } from "./router/ai";
 import { draftRouter } from "./router/draft";
 import { postRouter } from "./router/post";
 import { tagRouter } from "./router/tags";
@@ -8,6 +9,7 @@ export const AppRouter = createTRPCRouter({
   draft: draftRouter,
   tag: tagRouter,
   post: postRouter,
+  ai: aiRouter,
 });
 
 export type AppRouter = typeof AppRouter;

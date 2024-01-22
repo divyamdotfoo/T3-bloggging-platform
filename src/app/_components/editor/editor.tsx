@@ -8,11 +8,13 @@ import { api } from "@/server/react";
 import { useSaveStatus } from "@/store";
 import { useDebounce } from "@/lib/hooks/debounce";
 import { tools } from "./tools.mjs";
+import { useEditor } from "@/store/editorContext";
 
 export default function Editor({ draft }: { draft: Draft }) {
   const session = useSession();
   const editorref = useRef<EditorJs | null>(null);
-  const [data, setData] = useState(draft.content as unknown as OutputData);
+  const { editorData: data, setEditorData: setData } = useEditor();
+
   const { debouncedData } = useDebounce<OutputData>(data, 800);
   const updateDraft = api.draft.updateDraftContent.useMutation({
     onMutate: () => setSaving(true),
@@ -29,22 +31,23 @@ export default function Editor({ draft }: { draft: Draft }) {
       onChange: async () => {
         const data = await editorref.current?.saver.save();
         if (data) setData(data);
+        console.log(data);
       },
     });
     editorref.current = editor;
   }, []);
 
-  useEffect(() => {
-    const save = () => {
-      if (!session.data?.user) {
-        localStorage.setItem("data", JSON.stringify(debouncedData));
-        return;
-      } else {
-        updateDraft.mutate({ id: draft.id, content: debouncedData });
-      }
-    };
-    save();
-  }, [debouncedData]);
+  // useEffect(() => {
+  //   const save = () => {
+  //     if (!session.data?.user) {
+  //       localStorage.setItem("data", JSON.stringify(debouncedData));
+  //       return;
+  //     } else {
+  //       updateDraft.mutate({ id: draft.id, content: debouncedData });
+  //     }
+  //   };
+  //   save();
+  // }, [debouncedData]);
   return (
     <div className=" mx-auto w-full px-4 py-6 md:w-2/3  md:px-0 ">
       {draft.bannerImg ? (

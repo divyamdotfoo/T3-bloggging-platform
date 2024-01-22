@@ -30,6 +30,7 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { useDebounce } from "@/lib/hooks/debounce";
 import type { Draft } from "@prisma/client";
 import Link from "next/link";
+import { AskAiBtn } from "../ai";
 export function EditorNav() {
   return (
     <div className=" flex w-full items-center justify-between  px-1 md:px-4">
@@ -37,6 +38,7 @@ export function EditorNav() {
         <ShowSidebar />
       </div>
       <div className=" flex items-center gap-2 md:gap-4">
+        <AskAiBtn />
         <Sync />
         <PreviewBtn />
         <PublishBtn />
