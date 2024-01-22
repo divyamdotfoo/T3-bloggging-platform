@@ -18,6 +18,7 @@ import { useEditor } from "@/store/editorContext";
 import { arrayToSchema, schemaToArray } from "@/lib/schemaParser";
 import { useRouter } from "next/navigation";
 import { flushSync } from "react-dom";
+import { useMutation } from "@tanstack/react-query";
 
 export function AskAiBtn() {
   return (
@@ -96,11 +97,28 @@ export function SendChat() {
   const { setMessages } = useAiHelp();
   const { editorData, editorRef } = useEditor();
   const [query, setQuery] = useState("");
-
-  const sendAi = api.ai.chat.useMutation({
+  const helloAi = useMutation<
+    { data: string },
+    Error,
+    {
+      input: string;
+      data: ReturnType<typeof schemaToArray>["arr"];
+    }
+  >({
+    mutationKey: ["ai-help"],
+    mutationFn: async ({ input, data }) => {
+      console.log("i was called");
+      const res = await fetch("/api/ai", {
+        method: "POST",
+        body: JSON.stringify({ input, data }),
+      });
+      const resData = await res.json();
+      return resData;
+    },
     onSuccess: (data) => {
       if (data) {
-        const parsedData = JSON.parse(data as string);
+        console.log(data, typeof data);
+        const parsedData = JSON.parse(data.data);
         const outputData = arrayToSchema({
           arr: parsedData,
           version: editorData.version,
@@ -112,6 +130,21 @@ export function SendChat() {
       }
     },
   });
+  // const sendAi = api.ai.chat.useMutation({
+  //   onSuccess: (data) => {
+  //     if (data) {
+  //       const parsedData = JSON.parse(data as string);
+  //       const outputData = arrayToSchema({
+  //         arr: parsedData,
+  //         version: editorData.version,
+  //       });
+  //       console.log("ai", outputData);
+  //       if (editorRef.current) {
+  //         editorRef.current?.blocks.render(outputData);
+  //       }
+  //     }
+  //   },
+  // });
 
   const handleSendPrompt = () => {
     if (!query) return;
@@ -120,8 +153,9 @@ export function SendChat() {
       id: nanoid(),
       type: "user",
     });
-    sendAi.mutate(
-      { message: query, data: schemaToArray(editorData).arr },
+    setQuery("");
+    helloAi.mutate(
+      { input: query, data: schemaToArray(editorData).arr },
       {
         onError: (e) => {
           setQuery("");
@@ -129,7 +163,6 @@ export function SendChat() {
         },
       }
     );
-    setQuery("");
     if (textAreaRef.current) {
       textAreaRef.current.style.height = "40px";
     }
@@ -162,7 +195,7 @@ export function SendChat() {
         className=" hover:bg-background"
         onClick={handleSendPrompt}
       >
-        {sendAi.isPending ? (
+        {helloAi.isPending ? (
           <Loader className=" animate-spin w-4 h-4" />
         ) : (
           <SendHorizonalIcon className=" text-primary w-5 h-5" />

@@ -5,21 +5,26 @@ export const schemaToArray = (
   data: OutputData
 ): { arr: Array<string | string[]>; version: string | undefined } => {
   const blocks = data.blocks;
-  const arr = [];
+  const arr: Array<string | string[]> = [];
   let pIndex = 0;
-  for (const block of blocks) {
-    if (block.type === "header") {
-      arr.push(block.data.text);
-      pIndex++;
-    } else if (block.type === "paragraph") {
-      if (Array.isArray(arr[pIndex])) {
-        arr[pIndex].push(block.data.text);
-      } else {
-        arr[pIndex] = [block.data.text];
+  if (Array.isArray(blocks)) {
+    for (const block of blocks) {
+      if (block.type === "header") {
+        arr.push(block.data.text);
+        pIndex++;
+      } else if (block.type === "paragraph") {
+        if (Array.isArray(arr[pIndex])) {
+          const z = arr[pIndex] as string[];
+          z.push(block.data.text);
+        } else {
+          arr[pIndex] = [block.data.text];
+        }
       }
     }
+    return { arr, version: data.version };
+  } else {
+    return { arr, version: data.version };
   }
-  return { arr, version: data.version };
 };
 
 export const arrayToSchema = (data: ReturnType<typeof schemaToArray>) => {

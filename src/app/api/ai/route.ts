@@ -1,11 +1,20 @@
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import { schemaToArray } from "@/lib/schemaParser";
+import { NextResponse } from "next/server";
+
 import { ChatOpenAI } from "@langchain/openai";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 
-import { z } from "zod";
+interface AiReq {
+  input: string;
+  data: ReturnType<typeof schemaToArray>["arr"];
+}
+export const runtime = "edge";
+
 const chatModel = new ChatOpenAI({
   openAIApiKey: process.env.OPENAI_KEY,
   temperature: 0.8,
+  modelName: "gpt-3.5-turbo",
+  streaming: false,
 });
 
 const prompt = ChatPromptTemplate.fromMessages([
@@ -25,22 +34,20 @@ const prompt = ChatPromptTemplate.fromMessages([
 ]);
 
 const chain = prompt.pipe(chatModel);
-export const aiRouter = createTRPCRouter({
-  chat: publicProcedure
-    .input(z.object({ message: z.string(), data: z.any() }))
-    .mutation(async ({ ctx, input }) => {
-      console.log("input", input.message);
-      console.log("data", input.data);
-      try {
-        const aiRes = await chain.invoke({
-          input: input.message,
-          data: input.data,
-        });
-        console.log("ai response");
-        return aiRes.content;
-      } catch (e) {
-        console.log(e);
-      }
-      return null;
-    }),
-});
+
+export async function POST(req: Request) {
+  const data: AiReq = await req.json();
+  try {
+    const aiRes = await chain.invoke({
+      input: data.input,
+      data: data.data,
+    });
+    return NextResponse.json({ data: aiRes.content });
+  } catch (e) {
+    console.log(e);
+    return NextResponse.json(
+      {},
+      { status: 500, statusText: "something went wrong on the server" }
+    );
+  }
+}
