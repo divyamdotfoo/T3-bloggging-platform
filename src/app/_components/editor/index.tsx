@@ -31,6 +31,8 @@ import { useDebounce } from "@/lib/hooks/debounce";
 import type { Draft } from "@prisma/client";
 import Link from "next/link";
 import { AskAiBtn } from "../ai";
+import { useEditor } from "@/store/editorContext";
+import { schemaToArray } from "@/lib/schemaParser";
 export function EditorNav() {
   return (
     <div className=" flex w-full items-center justify-between  px-1 md:px-4">
@@ -176,7 +178,51 @@ export function PreviewBtn() {
 }
 
 export function PublishBtn() {
-  return <Button className="">Publish</Button>;
+  const session = useSession();
+  const router = useRouter();
+  const { editorData, title, draft } = useEditor();
+  const updateDraftStatus = api.draft.updateDraftStatus.useMutation({
+    onSuccess: () => {
+      router.refresh();
+    },
+  });
+  const createPost = api.post.addPost.useMutation({
+    onSuccess: (data) => {
+      updateDraftStatus.mutate({
+        id: draft.id,
+        status: true,
+      });
+      router.push(`/post/${data.id}`);
+    },
+  });
+
+  const handler = () => {
+    router.refresh();
+    if (!session.data?.user) {
+      router.push("/login");
+      return;
+    }
+    const intro = schemaToArray(editorData).arr[1][0] ?? "";
+    createPost.mutate({
+      post: {
+        intro: intro,
+        tags: [],
+        title,
+        content: editorData,
+        thumbnail: draft.bannerImg,
+      },
+    });
+  };
+  return (
+    <Button className="" onClick={handler}>
+      Publish
+      {createPost.isPending ? (
+        <LoaderIcon className=" w-4 h-4 animate-spin" />
+      ) : (
+        ""
+      )}
+    </Button>
+  );
 }
 
 export function Sync() {
@@ -305,15 +351,9 @@ export function ImageUploader({ draftId }: { draftId: string }) {
   }
 }
 
-export function TitleTextArea({
-  draftId,
-  title,
-}: {
-  draftId: string;
-  title: string;
-}) {
-  const [text, setText] = useState(title);
+export function TitleTextArea({ draftId }: { draftId: string }) {
   const router = useRouter();
+  const { title: text, setTitle: setText } = useEditor();
   const setSaving = useSaveStatus((s) => s.setSaving);
   const { debouncedData } = useDebounce<string>(text, 2000);
   const changetTitle = api.draft.updateDraftTitle.useMutation({

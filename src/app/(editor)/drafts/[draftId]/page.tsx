@@ -25,7 +25,11 @@ export default async function DraftPage({ params }: PageProps) {
     if (!draft) return <p>we dont know what you are looking for </p>;
     return (
       <>
-        <EditorProvider value={draft.content as unknown as OutputData}>
+        <EditorProvider
+          value={draft.content as unknown as OutputData}
+          title={draft.title ?? ""}
+          draft={draft}
+        >
           <EditorNav />
           <Editor draft={draft} />
         </EditorProvider>

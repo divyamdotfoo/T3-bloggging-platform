@@ -17,13 +17,8 @@ export const postRouter = createTRPCRouter({
           id: input.id,
         },
         include: {
-          user: {
-            select: {
-              username: true,
-              name: true,
-              avatar: true,
-            },
-          },
+          user: true,
+          tags: true,
         },
       });
       if (!post) {
@@ -70,8 +65,10 @@ export const postRouter = createTRPCRouter({
               username: true,
               name: true,
               avatar: true,
+              bio: true,
             },
           },
+          tags: true,
         },
       });
       if (!data.length) return;
@@ -141,7 +138,7 @@ export const postRouter = createTRPCRouter({
         post: z.object({
           title: z.string(),
           content: z.any(),
-          thumbnail: z.string().optional(),
+          thumbnail: z.string().optional().nullable(),
           blurDataUrl: z.string().optional(),
           intro: z.string(),
           tags: z.array(z.string()),

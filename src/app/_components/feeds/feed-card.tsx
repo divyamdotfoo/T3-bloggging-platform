@@ -118,7 +118,9 @@ export function FeedCard({
           )}
           {post.views > 0 && <p className=" text-sm">{post.views} reads</p>}
         </div>
-        <div>
+        <div className=" flex items-center gap-2">
+          {Array.isArray(post.tags) &&
+            post.tags.map((t) => <Badge key={t.id}>{t.name}</Badge>)}
           {showBookmarkIcon && (
             <button onClick={bookmarkHandler}>
               {bmrk ? (
@@ -136,5 +138,40 @@ export function FeedCard({
 }
 
 function UserMeta({ post }: { post: PostQueryOutput }) {
-  return <p>user data</p>;
+  return (
+    <div>
+      <div className=" flex justify-between w-full items-start">
+        <Avatar className=" w-16 h-16 rounded-full">
+          <AvatarFallback>{post.user.name[0]}</AvatarFallback>
+          <AvatarImage src={post.user.avatar ?? ""} />
+        </Avatar>
+        <Button variant={"default"} size={"lg"} className=" rounded-2xl">
+          Follow
+        </Button>
+      </div>
+      <div className=" flex flex-col items-start gap-1 mt-2">
+        <p className=" text-lg font-semibold tracking-wide">{post.user.name}</p>
+        <p className=" textsm font-semibold opacity-80 text-muted-foreground">
+          {post.user.bio}
+        </p>
+        <p className=" text-xs font-semibold opacity-65">
+          {getShortDate(post.user.createdAt)}
+        </p>
+        <div className=" flex items-center gap-2">
+          <Link
+            href={`/${post.user.username ?? post.userId}/following`}
+            className=" opacity-80 hover:text-primary hover:opacity-100 transition-all"
+          >
+            Following
+          </Link>
+          <Link
+            href={`/${post.user.username ?? post.userId}/followers`}
+            className=" opacity-80 hover:text-primary hover:opacity-100 transition-all"
+          >
+            Followers
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
 }

@@ -28,7 +28,16 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import React, { useState } from "react";
 import { signOut, useSession } from "next-auth/react";
 import { api } from "@/server/react";
-import { Loader } from "lucide-react";
+import {
+  BookMarkedIcon,
+  BookmarkCheck,
+  Database,
+  Loader,
+  Settings,
+  UserCircle2Icon,
+} from "lucide-react";
+import Link from "next/link";
+import { Separator } from "@/components/ui/separator";
 export function SearchBtn({ asFooter }: { asFooter: boolean }) {
   const router = useRouter();
   if (asFooter)
@@ -142,20 +151,21 @@ export function User({
   name: string;
 }) {
   const data = [
+    { name: "Profile", href: `/${username ?? id}`, icon: UserCircle2Icon },
     {
       name: "My Drafts",
-      Icon: <FileTextIcon className=" h-6 w-6" color="#6d28d9" />,
       href: "/drafts",
+      icon: Database,
     },
     {
       name: "Bookmarks",
-      Icon: <BookmarkFilledIcon className=" h-6 w-6" color="#6d28d9" />,
       href: "/bookmarks",
+      icon: BookmarkCheck,
     },
     {
       name: "Settings",
-      Icon: <GearIcon className=" h-6 w-6" color="#6d28d9" />,
       href: "/settings",
+      icon: Settings,
     },
   ];
   return (
@@ -166,22 +176,38 @@ export function User({
           <AvatarImage src={avatar} />
         </Avatar>
       </PopoverTrigger>
-      <PopoverContent className=" p-0">
-        <div className=" flex w-full flex-col items-start gap-2">
-          <div className=" flex w-full items-center gap-2 bg-accent px-4 py-2 text-accent-foreground">
-            <Avatar className=" border-2 border-primary">
-              <AvatarFallback>{name[0]?.toUpperCase()}</AvatarFallback>
-              <AvatarImage src={avatar} />
-            </Avatar>
-            <div>
-              <p className=" text-lg font-semibold">{capitalize(name)}</p>
-              <p className=" text-muted-foreground">{username}</p>
-            </div>
-            <Button onClick={() => signOut()}>log out</Button>
-          </div>
-        </div>
+      <PopoverContent className=" p-0 flex flex-col items-start max-w-52 mx-2">
+        {data.map((d) => (
+          <AvatarLink key={d.name} name={d.name} path={d.href}>
+            <d.icon className=" w-5 h-5 text-primary" />
+          </AvatarLink>
+        ))}
       </PopoverContent>
     </Popover>
+  );
+}
+
+function AvatarLink({
+  path,
+  name,
+  children,
+}: {
+  path: string;
+  name: string;
+  children?: React.ReactNode;
+}) {
+  return (
+    <>
+      <Link
+        href={path}
+        className=" flex items-center gap-4 w-full px-4 py-2 bg-primary/10 hover:bg-primary/15 transition-all"
+      >
+        {children}
+
+        <p>{name}</p>
+      </Link>
+      <Separator />
+    </>
   );
 }
 

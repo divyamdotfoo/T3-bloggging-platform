@@ -55,7 +55,7 @@ export default function Editor({ draft }: { draft: Draft }) {
         <AddCoverBtn />
       )}
       <ImageUploader draftId={draft.id} />
-      <TitleTextArea draftId={draft.id} title={draft.title ?? ""} />
+      <TitleTextArea draftId={draft.id} />
       <div id="editorjs" className=""></div>
     </div>
   );

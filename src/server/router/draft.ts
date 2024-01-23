@@ -1,5 +1,5 @@
 import { createTRPCRouter, protectedProcedure } from "../trpc";
-import { z } from "zod";
+import { boolean, z } from "zod";
 import { Prisma } from "@prisma/client";
 export const draftRouter = createTRPCRouter({
   getById: protectedProcedure
@@ -98,6 +98,18 @@ export const draftRouter = createTRPCRouter({
         },
         data: {
           bannerImg: "",
+        },
+      });
+    }),
+  updateDraftStatus: protectedProcedure
+    .input(z.object({ id: z.string(), status: z.boolean() }))
+    .mutation(({ ctx, input }) => {
+      return ctx.db.draft.update({
+        where: {
+          id: input.id,
+        },
+        data: {
+          published: input.status,
         },
       });
     }),
