@@ -37,6 +37,7 @@ export const postRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       const data = await ctx.db.post.findMany({
         skip: 1,
+        orderBy:[{createdAt:"desc"}],
         cursor: input.cursor
           ? {
               id: input.cursor,
