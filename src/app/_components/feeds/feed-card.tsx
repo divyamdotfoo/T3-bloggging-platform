@@ -62,7 +62,7 @@ export function FeedCard({
         </HoverCard>
         <div className=" flex flex-col items-start">
           <Link
-            href={`/${post?.user?.username}`}
+            href={`/${post?.user?.username??post.user.id}`}
             className="text-sm font-semibold leading-none tracking-tight hover:underline"
           >
             {post.user.name}
